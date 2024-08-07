@@ -1,0 +1,12 @@
+{
+    "IsEncrypted": false,
+    "Values": {
+        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+        "FUNCTIONS_WORKER_RUNTIME": "python",
+        "POSTGRES_DB": "<YOUR_DB_NAME>",
+        "POSTGRES_USER": "<YOUR_DB_USER>",
+        "POSTGRES_PASSWORD": "<YOUR_DB_PASSWORD>",
+        "POSTGRES_HOST": "<YOUR_DB_HOST>",
+        "POSTGRES_PORT": "5432"
+    }
+}
