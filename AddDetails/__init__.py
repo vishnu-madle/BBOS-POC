@@ -3,6 +3,7 @@ import psycopg2
 import json
 import azure.functions as func
 import os
+from email.utils import parseaddr
 
 def main(req: func.HttpRequest, res: func.Out[func.HttpResponse]) -> None:
     logging.info('Python HTTP trigger function processed a request.')
@@ -13,7 +14,7 @@ def main(req: func.HttpRequest, res: func.Out[func.HttpResponse]) -> None:
         logging.info(f"Parsed request body: {req_body}")
     except ValueError:
         res.set(func.HttpResponse(
-            "Invalid input",
+            "Invalid JSON input",
             status_code=400
         ))
         return
@@ -21,9 +22,17 @@ def main(req: func.HttpRequest, res: func.Out[func.HttpResponse]) -> None:
     name = req_body.get('Name')
     email = req_body.get('Email')
 
-    if not name or not email:
+    # Validate presence and data type of 'Name' and 'Email'
+    if not name or not isinstance(name, str) or not name.strip():
         res.set(func.HttpResponse(
-            "Name and email are required",
+            "Valid 'Name' is required",
+            status_code=400
+        ))
+        return
+
+    if not email or not isinstance(email, str) or not is_valid_email(email):
+        res.set(func.HttpResponse(
+            "Valid 'Email' is required",
             status_code=400
         ))
         return
@@ -36,11 +45,12 @@ def main(req: func.HttpRequest, res: func.Out[func.HttpResponse]) -> None:
             user="postgres",
             password="vishnu@1234",
             host="bbos-database.postgres.database.azure.com",
-            port="5432"
+            port="5432",
+            sslmode="require"  # Ensures the connection is encrypted
         )
         cur = conn.cursor()
         # Execute SQL command
-        cur.execute("INSERT INTO details (name, email) VALUES (%s, %s)", (name, email))
+        cur.execute("INSERT INTO details (name, email) VALUES (%s, %s)", (name.strip(), email.strip()))
         conn.commit()
         cur.close()
 
@@ -63,3 +73,10 @@ def main(req: func.HttpRequest, res: func.Out[func.HttpResponse]) -> None:
     finally:
         if conn:
             conn.close()
+
+def is_valid_email(email):
+    """
+    Validate email format using parseaddr from the email.utils module.
+    """
+    _, addr = parseaddr(email)
+    return '@' in addr and '.' in addr
