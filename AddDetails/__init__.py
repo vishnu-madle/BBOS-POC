@@ -18,8 +18,8 @@ def main(req: func.HttpRequest, res: func.Out[func.HttpResponse]) -> None:
         ))
         return
 
-    name = req_body.get('name')
-    email = req_body.get('email')
+    name = req_body.get('Name')
+    email = req_body.get('Email')
 
     if not name or not email:
         res.set(func.HttpResponse(
