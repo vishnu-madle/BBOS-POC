@@ -150,7 +150,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ name, email })
+                    body: JSON.stringify({ "name": name, "email": email})
                 });
  
                 if (response.ok) {
