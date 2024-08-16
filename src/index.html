@@ -5,170 +5,150 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Welcome Page</title>
 <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
- 
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+    body {
+        font-family: 'Roboto', sans-serif;
+        background: linear-gradient(135deg, #3a7bd5, #00d2ff); /* Changed */
+        color: #fff; /* Changed */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
+        animation: fadeInBg 2s ease-in-out; /* Added */
+    }
+    @keyframes fadeInBg { /* Added */
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    .container {
+        background-color: rgba(255, 255, 255, 0.1); /* Changed */
+        backdrop-filter: blur(10px);
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        width: 350px;
+        text-align: center;
+        animation: zoomIn 1s ease-in-out; /* Added */
+    }
+    @keyframes zoomIn { /* Added */
+        from { transform: scale(0.8); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    h1 {
+        color: #e0f7fa; /* Changed */
+        margin-bottom: 25px;
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Changed */
+    }
+    label {
+        font-weight: 500;
+        margin-bottom: 8px;
+        display: block;
+        color: #b3e5fc; /* Changed */
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Changed */
+    }
+    input[type="text"],
+    input[type="password"] {
+        width: 100%;
+        padding: 14px;
+        margin-bottom: 20px;
+        border: none;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.4); /* Changed */
+        color: #fff; /* Changed */
+        font-size: 16px;
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.4s, box-shadow 0.4s;
+    }
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+        background: rgba(255, 255, 255, 0.6); /* Changed */
+        box-shadow: 0 0 12px #00bcd4; /* Changed */
+        outline: none;
+        transform: scale(1.02);
+        transition: transform 0.3s;
+    }
+    button {
+        background-color: #007bb6;
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 12px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 18px;
+        font-weight: bold;
+        transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+    button:hover {
+        background-color: #005f87;
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+    .message {
+        margin-top: 20px;
+        font-size: 17px;
+        display: none;
+        animation: fadeIn 1s ease-in-out; /* Added */
+    }
+    @keyframes fadeIn { /* Added */
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @media (max-width: 350px) {
         body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #3a7bd5, #00d2ff);
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            animation: fadeInBg 2s ease-in-out;
-        }
-        @keyframes fadeInBg {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            padding: 15px;
         }
         .container {
-            background-color: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-            width: 350px;
-            text-align: center;
-            animation: zoomIn 1s ease-in-out;
-        }
-        @keyframes zoomIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        h1 {
-            color: #e0f7fa;
-            margin-bottom: 25px;
-            font-size: 26px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            animation: slideDown 1.2s ease-in-out;
-        }
-        @keyframes slideDown {
-            from { transform: translateY(-20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        label {
-            font-weight: 500;
-            margin-bottom: 8px;
-            display: block;
-            color: #b3e5fc;
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-        }
-        input[type="text"],
-        input[type="email"] {
             width: 100%;
-            padding: 14px;
-            margin-bottom: 20px;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.4);
-            color: #fff;
-            font-size: 16px;
-            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.4s, box-shadow 0.4s;
         }
-        input[type="text"]:focus,
-        input[type="email"]:focus {
-            background: rgba(255, 255, 255, 0.6);
-            box-shadow: 0 0 12px #00bcd4;
-            outline: none;
-            transform: scale(1.02);
-            transition: transform 0.3s;
-        }
-        button {
-            background-color: #007bb6;
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 12px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 18px;
-            font-weight: bold;
-            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-        button:hover {
-            background-color: #005f87;
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-        }
-        .message {
-            margin-top: 20px;
-            font-size: 17px;
-            display: none;
-            animation: fadeIn 1s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @media (max-width: 350px) {
-            body {
-                padding: 15px;
-            }
-            .container {
-                width: 100%;
-            }
-        }
+    }
 </style>
 </head>
 <body>
 <div class="container">
-<h1>Welcome</h1>
-<form id="detailsForm">
-<label for="name">Name:</label>
-<input type="text" id="name" name="name" required>
-<label for="email">Email:</label>
-<input type="email" id="email" name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address.">
- 
-            <button type="button" onclick="submitForm()">Submit</button>
-</form>
-<div class="message" id="message"></div>
+    <h1>Login</h1>
+    <form id="loginForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <button type="button" onclick="submitLogin()">Login</button>
+    </form>
+    <div class="message" id="loginMessage"></div>
 </div>
- 
-    <script>
-        async function submitForm() {
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const messageDiv = document.getElementById('message');
-            messageDiv.style.display = 'none'; // Hide message on submit
- 
-            if (!document.getElementById('detailsForm').checkValidity()) {
-                messageDiv.textContent = 'Please enter a valid email address.';
-                messageDiv.style.color = '#f44336';
-                messageDiv.style.display = 'block';
-                return;
-            }
- 
-            try {  
-                const response = await fetch('https://bbos-test-poc.azurewebsites.net/api/AddDetails?code=Ovb1Hsv3WQAECcVZ0Yy-uQThxBPbwShpc1IDrMX_iXFdAzFujfKU8w%3D%3D', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ "name": name, "email": email})
-                });
- 
-                if (response.ok) {
-                    messageDiv.textContent = 'Details submitted successfully!';
-                    messageDiv.style.color = '#4caf50';
-                    document.getElementById('detailsForm').reset();
-                } else {
-                    messageDiv.textContent = 'Failed to submit details.';
-                    messageDiv.style.color = '#f44336';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                messageDiv.textContent = 'An error occurred while submitting details.';
-                messageDiv.style.color = '#f44336';
-            }
- 
-            messageDiv.style.display = 'block'; // Show message
+
+<script>
+    function submitLogin() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const messageDiv = document.getElementById('loginMessage');
+        messageDiv.style.display = 'none'; // Hide message on submit
+
+        // Set the allowed credentials
+        const allowedUsername = 'stryv-user';
+        const allowedPassword = 'stryv@1234';
+
+        // Check if entered credentials match the allowed credentials
+        if (username === allowedUsername && password === allowedPassword) {
+            messageDiv.textContent = 'Login successful!';
+            messageDiv.style.color = '#4caf50';
+            document.getElementById('loginForm').reset();
+        } else {
+            messageDiv.textContent = 'Invalid username or password.';
+            messageDiv.style.color = '#f44336';
         }
+
+        messageDiv.style.display = 'block'; // Show message
+    }
+    // Highlighted line below
+    const response = await fetch('https://bbos-test-poc.azurewebsites.net/api/AddDetails?code=Ovb1Hsv3WQAECcVZ0Yy-uQThxBPbwShpc1IDrMX_iXFdAzFujfKU8w%3D%3D', {
 </script>
 </body>
 </html>
