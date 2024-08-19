@@ -3,6 +3,8 @@ import psycopg2
 import json
 import azure.functions as func
 import os
+import DefaultAzureCredential
+import SecretClient
 
 def main(req: func.HttpRequest, res: func.Out[func.HttpResponse]) -> None:
     logging.info('Python HTTP trigger function processed a request.')
@@ -30,13 +32,29 @@ def main(req: func.HttpRequest, res: func.Out[func.HttpResponse]) -> None:
 
     conn = None
     try:
+        # Retrieve Key Vault URL from environment variables
+        key_vault_url = os.environ["KEY_VAULT_URL"]
+
+        # Authenticate using the managed identity
+        credential = DefaultAzureCredential()
+
+        # Create a client to access secrets in Key Vault
+        secret_client = SecretClient(vault_url=key_vault_url, credential=credential)
+
+        # Retrieve PostgreSQL credentials from Key Vault
+        db_name = secret_client.get_secret("PostgreSQL-DBName").value
+        db_user = secret_client.get_secret("PostgreSQL-User").value
+        db_password = secret_client.get_secret("PostgreSQL-Password").value
+        db_host = secret_client.get_secret("PostgreSQL-Host").value
+        db_port = secret_client.get_secret("PostgreSQL-Port").value
+
         # Connect to PostgreSQL
         conn = psycopg2.connect(
-            dbname="postgres",
-            user="postgres",
-            password="vishnu@1234",
-            host="bbos-database.postgres.database.azure.com",
-            port="5432"
+            dbname=db_name,
+            user=db_user,
+            password=db_password,
+            host=db_host,
+            port=db_port
         )
         cur = conn.cursor()
         # Execute SQL command
