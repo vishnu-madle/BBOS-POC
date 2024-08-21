@@ -3,8 +3,9 @@ import psycopg2
 import json
 import azure.functions as func
 import os
-from azure.identity import DefaultAzureCredential
-from azure.keyvault.secrets import SecretClient
+import DefaultAzureCredential
+import SecretClient
+import re
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
@@ -13,18 +14,20 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         # Parse the JSON request body
         req_body = req.get_json()
         logging.info(f"Parsed request body: {req_body}")
-    except ValueError:
+    except json.JSONDecodeError:
         return func.HttpResponse(
-            "Invalid input",
+            "Invalid JSON input",
             status_code=400
         )
 
     name = req_body.get('name')
     email = req_body.get('email')
 
-    if not name or not email:
+    # Validate inputs
+    email_pattern = re.compile(r"[^@]+@[^@]+\.[^@]+")
+    if not name or not email or not email_pattern.match(email):
         return func.HttpResponse(
-            "Name and email are required",
+            "Valid name and email are required",
             status_code=400
         )
 
@@ -48,13 +51,22 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         db_host = secret_client.get_secret("PostgreSQL-Host").value
         db_port = secret_client.get_secret("PostgreSQL-Port").value
 
+    except Exception as kv_error:
+        logging.error(f"Failed to retrieve secrets from Key Vault: {kv_error}")
+        return func.HttpResponse(
+            "Failed to retrieve secrets.",
+            status_code=500
+        )
+
+    try:
         # Connect to PostgreSQL
         conn = psycopg2.connect(
             dbname=db_name,
             user=db_user,
             password=db_password,
             host=db_host,
-            port=db_port
+            port=db_port,
+            connect_timeout=10
         )
 
         with conn.cursor() as cur:
@@ -80,7 +92,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             status_code=500
         )
     finally:
-        if conn:
+        if conn and not conn.closed:
             try:
                 conn.close()
             except psycopg2.Error as close_error:
