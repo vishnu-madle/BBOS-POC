@@ -22,7 +22,7 @@ def main(req: func.HttpRequest, res: func.Out[func.HttpResponse]) -> None:
 
     name = req_body.get('name')
     email = req_body.get('email')
-   print("name : " + name +" email : " + email)
+    logging.info("name : " + name +" email : " + email)
     if not name or not email:
         res.set(func.HttpResponse(
             "Name and email are required",
