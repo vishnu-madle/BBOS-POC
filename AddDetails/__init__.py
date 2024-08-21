@@ -5,38 +5,35 @@ import azure.functions as func
 import os
 import DefaultAzureCredential
 import SecretClient
-import re
 
-def main(req: func.HttpRequest) -> func.HttpResponse:
+def main(req: func.HttpRequest, res: func.Out[func.HttpResponse]) -> None:
     logging.info('Python HTTP trigger function processed a request.')
 
     try:
         # Parse the JSON request body
         req_body = req.get_json()
         logging.info(f"Parsed request body: {req_body}")
-    except json.JSONDecodeError:
-        return func.HttpResponse(
-            "Invalid JSON input",
+    except ValueError:
+        res.set(func.HttpResponse(
+            "Invalid input",
             status_code=400
-        )
+        ))
+        return
 
     name = req_body.get('name')
     email = req_body.get('email')
 
-    # Validate inputs
-    email_pattern = re.compile(r"[^@]+@[^@]+\.[^@]+")
-    if not name or not email or not email_pattern.match(email):
-        return func.HttpResponse(
-            "Valid name and email are required",
+    if not name or not email:
+        res.set(func.HttpResponse(
+            "Name and email are required",
             status_code=400
-        )
+        ))
+        return
 
     conn = None
     try:
         # Retrieve Key Vault URL from environment variables
-        key_vault_url = os.environ.get("KEY_VAULT_URL")
-        if not key_vault_url:
-            raise EnvironmentError("KEY_VAULT_URL environment variable not found")
+        key_vault_url = os.environ["KEY_VAULT_URL"]
 
         # Authenticate using the managed identity
         credential = DefaultAzureCredential()
@@ -51,49 +48,36 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         db_host = secret_client.get_secret("PostgreSQL-Host").value
         db_port = secret_client.get_secret("PostgreSQL-Port").value
 
-    except Exception as kv_error:
-        logging.error(f"Failed to retrieve secrets from Key Vault: {kv_error}")
-        return func.HttpResponse(
-            "Failed to retrieve secrets.",
-            status_code=500
-        )
-
-    try:
         # Connect to PostgreSQL
         conn = psycopg2.connect(
             dbname=db_name,
             user=db_user,
             password=db_password,
             host=db_host,
-            port=db_port,
-            connect_timeout=10
+            port=db_port
         )
+        cur = conn.cursor()
+        # Execute SQL command
+        cur.execute("INSERT INTO details (name, email) VALUES (%s, %s)", (name, email))
+        conn.commit()
+        cur.close()
 
-        with conn.cursor() as cur:
-            # Execute SQL command
-            cur.execute("INSERT INTO details (name, email) VALUES (%s, %s)", (name, email))
-            conn.commit()
-
-        return func.HttpResponse(
+        res.set(func.HttpResponse(
             "Record added successfully",
             status_code=200
-        )
-
+        ))
     except psycopg2.Error as db_error:
         logging.error(f"Database error: {db_error}")
-        return func.HttpResponse(
+        res.set(func.HttpResponse(
             "Failed to add record to the database.",
             status_code=500
-        )
+        ))
     except Exception as e:
         logging.error(f"Unexpected error: {e}")
-        return func.HttpResponse(
+        res.set(func.HttpResponse(
             "An unexpected error occurred.",
             status_code=500
-        )
+        ))
     finally:
-        if conn and not conn.closed:
-            try:
-                conn.close()
-            except psycopg2.Error as close_error:
-                logging.error(f"Error closing connection: {close_error}")
+        if conn:
+            conn.close()
