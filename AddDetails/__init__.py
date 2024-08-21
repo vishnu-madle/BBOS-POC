@@ -6,27 +6,23 @@ import os
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 
-def main(req: func.HttpRequest) -> func.HttpResponse:
+def main(req: func.HttpRequest, res: func.Out[func.HttpResponse]) -> None:
     logging.info('Python HTTP trigger function processed a request.')
 
     try:
         req_body = req.get_json()
         logging.info(f"Parsed request body: {req_body}")
     except ValueError:
-        return func.HttpResponse(
-            "Invalid input",
-            status_code=400
-        )
+        res.set(func.HttpResponse("Invalid input", status_code=400)) 
+        return 
 
     name = req_body.get('name')
     email = req_body.get('email')
     logging.info(f"name: {name}, email: {email}")
-    
+   
     if not name or not email:
-        return func.HttpResponse(
-            "Name and email are required",
-            status_code=400
-        )
+        res.set(func.HttpResponse("Name and email are required", status_code=400))
+        return
 
     conn = None
     try:
@@ -52,22 +48,14 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         conn.commit()
         cur.close()
 
-        return func.HttpResponse(
-            "Record added successfully",
-            status_code=200
-        )
+        res.set(func.HttpResponse("Record added successfully", status_code=200))
+
     except psycopg2.Error as db_error:
         logging.error(f"Database error: {db_error}")
-        return func.HttpResponse(
-            "Failed to add record to the database.",
-            status_code=500
-        )
+        res.set(func.HttpResponse("Failed to add record to the database.", status_code=500))
     except Exception as e:
         logging.error(f"Unexpected error: {e}")
-        return func.HttpResponse(
-            "An unexpected error occurred.",
-            status_code=500
-        )
+        res.set(func.HttpResponse("An unexpected error occurred.", status_code=500))
     finally:
         if conn:
             conn.close()
